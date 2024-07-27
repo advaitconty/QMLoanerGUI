@@ -17,7 +17,8 @@ def load_inventory_as_dict(file_path):
                 'allocation': row['Allocation'],
                 'region': row['Code'].split('/')[0],
                 'serial': int(row['Code'].split('/')[1]),
-                'remarks': row['REMARKS']
+                'remarks': row['REMARKS'],
+                'available': True
             }
             inventory_list.append(guitar)
 
