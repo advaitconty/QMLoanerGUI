@@ -1,0 +1,8 @@
+pymongo
+google.generativeai
+reportlab
+pypdf
+pandas
+prettytable
+colorama
+streamlit
