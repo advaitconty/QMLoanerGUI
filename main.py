@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import secret
 import certifi
+import pdfs
 
 # Function to load data from MongoDB
 def load_data(item, client):
@@ -12,7 +13,7 @@ def load_data(item, client):
     return items
 
 # Function to confirm a loan
-def confirm_loan(selected_number, client, option, confirm):
+def confirm_loan(selected_number, client, option, confirm, name, clas):
     if confirm:
         db = client["inventory"]
         collection = db[option]
@@ -42,7 +43,9 @@ def confirm_loan(selected_number, client, option, confirm):
 
         # Print the number of documents updated
         if result.modified_count > 0:
-            st.session_state.confirmation_message = "Loan confirmed. The DataFrame will refresh."
+            pdf_path = load_loan_form(name=name, clas=clas, model=document["brand"], id=document["_id"])
+            st.session_state.confirmation_message = "Loan confirmed. Please download the loan form."
+            st.session_state.pdf_path = pdf_path
             st.session_state.refresh = True
         else:
             st.error("Failed to update the document")
@@ -50,6 +53,11 @@ def confirm_loan(selected_number, client, option, confirm):
 # Function to handle the option change
 def on_option_change():
     st.session_state.refresh = True
+
+@st.cache_resource()
+def load_loan_form(name, clas, model, id):
+    pdf_path = pdfs.create_loan_pdf(model, name, clas, id)
+    return pdf_path
 
 # Function to display the loan guitar form
 def loan_guitar_form(client):
@@ -67,6 +75,9 @@ def loan_guitar_form(client):
 
     if 'error_message' not in st.session_state:
         st.session_state.error_message = ""
+
+    if 'pdf_path' not in st.session_state:
+        st.session_state.pdf_path = None
 
     # Option picker with callback
     option = st.selectbox(
@@ -93,25 +104,29 @@ def loan_guitar_form(client):
             max_value=len(st.session_state.data) - 1,
             value=0
         )
-        option2 = st.selectbox("Confirm?", (False, True))
+        name = st.text_input("Please enter your name: (For loan purposes)")
+        clas = st.text_input("Please enter your clas: (For loan purposes)")
+
         submitted = st.form_submit_button(
             label="Loan Guitar",
             help="Submit loan request",
         )
 
         if submitted:
-            confirm_loan(selected_number, client, option, option2)
-            st.experimental_rerun()
+            confirm_loan(selected_number, client, option, True, name, clas)
+            st.session_state.refresh = True
 
     # Display the confirmation message if available
     if st.session_state.confirmation_message:
         placeholder = st.empty()
         with placeholder.container():
             st.success(st.session_state.confirmation_message)
+            with open("LOAN_FORM.pdf", "rb") as file:
+                st.download_button("Download Loan Form", data=file, file_name="LOAN_FORM.pdf", mime="application/pdf")
             if st.button("Close"):
                 st.session_state.confirmation_message = ""
+                st.session_state.pdf_path = None
                 placeholder.empty()
-                st.experimental_rerun()
 
     # Display the error message if available
     if st.session_state.error_message:
@@ -121,7 +136,6 @@ def loan_guitar_form(client):
             if st.button("Close"):
                 st.session_state.error_message = ""
                 placeholder.empty()
-                st.experimental_rerun()
 
 # Main function
 def main():

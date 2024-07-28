@@ -1,40 +1,23 @@
-import pandas as pd
 from pymongo import MongoClient
 import secret
 import certifi
-import csv
 
+def reset_available_values(client, db_name):
+    db = client[db_name]
+    collections = db.list_collection_names()
 
-def load_inventory_as_dict(file_path):
-    inventory_list = []
+    for collection_name in collections:
+        collection = db[collection_name]
+        update_result = collection.update_many(
+            {},
+            {"$set": {"available": True}}
+        )
+        print(f"Updated {update_result.modified_count} documents in collection '{collection_name}'")
 
-    with open(file_path, mode='r') as file:
-        csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            guitar = {
-                '_id': row['Code'].replace(' ', ''),
-                'brand': row['Brand'].strip(),
-                'allocation': row['Allocation'],
-                'region': row['Code'].split('/')[0],
-                'serial': int(row['Code'].split('/')[1]),
-                'remarks': row['REMARKS'],
-                'available': True
-            }
-            inventory_list.append(guitar)
+def main():
+    client = MongoClient(secret.mongo_host_connection("soote", "big", default=True), tlsCAFile=certifi.where())
+    db_name = "inventory"  # replace with your database name
+    reset_available_values(client, db_name)
 
-    return inventory_list
-def insert_document(document):
-    client = MongoClient(secret.mongo_host_connection("spsgeloans", "SooteFlap"), tlsCAFile=certifi.where())
-    possible_collections = ["Alhambra", "Synchronium", "Valencia", "Y. Chai"]
-    db = client["inventory"]
-    for item in document:
-        if item['brand'] in possible_collections:
-            collection = db[item['brand']]
-        else:
-            collection = db["Other"]
-
-        collection.insert_one(item)
-
-    client.close()
-
-insert_document(load_inventory_as_dict("inventory.csv"))
+if __name__ == '__main__':
+    main()
