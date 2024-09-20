@@ -105,7 +105,7 @@ def loan_guitar_form(client):
             value=0
         )
         name = st.text_input("Please enter your name: (For loan purposes)")
-        clas = st.text_input("Please enter your clas: (For loan purposes)")
+        clas = st.text_input("Please enter your class: (For loan purposes)")
 
         submitted = st.form_submit_button(
             label="Loan Guitar",
