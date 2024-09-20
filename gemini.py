@@ -16,7 +16,7 @@ def generate_gemini_response(prompt):
                   "cleaning instructions. If the user wants storage instructions, provide only the storage "
                   "instructions.")
 
-    response = genai.generate_text(prompt=f"{default_prompt} user input: {prompt}").text
+    response = model.generate_model(prompt=f"{default_prompt} user input: {prompt}").text
     # except Exception as e:
         # response = "Handling directions not available. Please Google them yourselves."
         # print("Error:\n{}".format(e))
