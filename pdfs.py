@@ -34,7 +34,7 @@ def create_loan_pdf(guitar_model, name, clas, serial_num):
     vertical_scaling_factor = line_height / image_height
     scaling_factor = min(horizontal_scaling_factor, vertical_scaling_factor)
 
-    Draw the scaled image
+    # Draw the scaled image
     canvas.drawInlineImage(
         image_path,
         1 * inch,  # X position
