@@ -5,7 +5,7 @@ def mongo_host_connection(username, password, default=False):
         return (f"mongodb+srv://{username}:{password}@qmloaner.ficx2qe.mongodb.net/?retryWrites=true&w=majority&appName=QMLoaner")
 
 
-GEMINI_API_KEY = "AIzaSyARiSvexPvfGsrbcXLeZmqylWqgxutIwLI"
+GEMINI_API_KEY = "AIzaSyAemiIaYORQw1j8pAAEoH9Z8fIXRTaMevE"
 ATTENDANCE_EMAILS = ["elias_wong_yi_hang@students.edu.sg",
                      "chen_li_yan@moe.edu.sg",
                      "faith_ang_si_ying@moe.edu.sg",
