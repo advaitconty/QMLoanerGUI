@@ -43,7 +43,7 @@ def confirm_loan(selected_number, client, option, confirm, name, clas):
 
         # Print the number of documents updated
         if result.modified_count > 0:
-            pdf_path = load_loan_form(name=name, clas=clas, model=document["brand"], id=document["_id"])
+            pdf_path = load_loan_form(name=name, clas=clas, model=document["Brand"], id=document["_id"])
             st.session_state.confirmation_message = "Loan confirmed. Please download the loan form."
             st.session_state.pdf_path = pdf_path
             st.session_state.refresh = True
